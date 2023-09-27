@@ -1,99 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import '../src/Styles/App.css'
+import React from 'react';
+
+import { Navbar } from './Components/Navbar';
+import {Routes,Route} from 'react-router-dom'
+
+import Signup from './Pages/signup';
+import Home from './Pages/Home';
+import Todolist from './Pages/Todolist'
+
 
 function App() {
-  const [todos, setTodos] = useState([]);
-  const [newTodo, setNewTodo] = useState('');
-
-  useEffect(() => {
-    fetch('https://jsonplaceholder.typicode.com/todos')
-      .then((response) => response.json())
-      .then((data) => setTodos(data));
-  }, []);
-
-  const addTodo = () => {
-    if (newTodo.trim() === '') {
-      return;
-    }
-
-    const newTodoItem = {
-      userId: 1, 
-      id: todos.length + 1,
-      title: newTodo,
-      completed: false,
-    };
-
-    fetch('https://jsonplaceholder.typicode.com/todos', {
-      method: 'POST',
-      body: JSON.stringify(newTodoItem),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setTodos([...todos, data]);
-        setNewTodo('');
-      });
-  };
-
-  const toggleTodo = (id) => {
-    const updatedTodos = todos.map((todo) => {
-      if (todo.id === id) {
-        todo.completed = !todo.completed;
-      }
-      return todo;
-    });
-
-    fetch(`https://jsonplaceholder.typicode.com/todos/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(updatedTodos.find((todo) => todo.id === id)),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => response.json())
-      .then(() => setTodos(updatedTodos));
-  };
-
-  const deleteTodo = (id) => {
-    fetch(`https://jsonplaceholder.typicode.com/todos/${id}`, {
-      method: 'DELETE',
-    }).then(() => {
-      const updatedTodos = todos.filter((todo) => todo.id !== id);
-      setTodos(updatedTodos);
-    });
-  };
-
   return (
-    <div className='container'>
-      <h1>To-Do List</h1>
-      <div className='input-container'>
-        <input
-          type="text"
-          placeholder="Add a new to-do"
-          value={newTodo}
-          onChange={(e) => setNewTodo(e.target.value)}
-          className="todo-input"
-        />
-        <button onClick={addTodo} className='add-button'>Add</button>
-      </div>
-      <ul className='todo-list'>
-        {todos.map((todo) => (
-          <li key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`}>
-            <input
-              type="checkbox"
-              checked={todo.completed}
-              onChange={() => toggleTodo(todo.id)}
-            />
-            <span className='todo-title' style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}>
-              {todo.title}
-            </span>
-            <button onClick={() => deleteTodo(todo.id)} className='delete-button'>Delete</button>
-          </li>
-        ))}
-      </ul>
+    <div className='Apps'> <Navbar/>
+    <Routes>
+    <Route path='/' element={<Home/>} />
+    
+      <Route path='/signup' element={<Signup/>} />
+      <Route path='/todolist' element={<Todolist/>} />
+      
+      
+    </Routes>
     </div>
+    
   );
 }
 
